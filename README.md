@@ -26,10 +26,6 @@ This project is a web-based tool that tests the strength of passwords. It analyz
    ```
    cd password-strength-tester
    ```
-3. Install the required Python packages:
-   ```
-   pip install -r requirements.txt
-   ```
 
 ## Usage
 
