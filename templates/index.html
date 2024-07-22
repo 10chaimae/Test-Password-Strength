@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Tester</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f4f4f9;
+            height: 100vh;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2em;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        input[type="password"] {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+        }
+        #strength-meter {
+            width: 300px;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        #strength-bar {
+            height: 100%;
+            width: 0;
+            background-color: red;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+        #password-strength {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        #feedback {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+        .tips {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #333;
+            max-width: 600px;
+            text-align: left;
+        }
+        .tips h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .tips ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Password Strength Tester</h1>
+    <form>
+        Enter your password: <input type="password" id="password" name="password">
+    </form>
+    <div id="strength-meter">
+        <div id="strength-bar"></div>
+    </div>
+    <div id="password-strength"></div>
+    <div id="feedback"></div>
+    <div class="tips">
+        <h2>Tips for Creating a Strong Password</h2>
+        <ul>
+            <li>Use at least 8 characters. Longer passwords are stronger.</li>
+            <li>Include both uppercase and lowercase letters.</li>
+            <li>Add numbers and special characters (e.g., !@#$%^&*).</li>
+            <li>Avoid using easily guessable information, such as your name or birthdate.</li>
+            <li>Don't use common passwords like "password" or "123456".</li>
+            <li>Consider using a passphrase made up of multiple unrelated words.</li>
+            <li>Change your passwords regularly and use different passwords for different accounts.</li>
+        </ul>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#password').on('input', function() {
+                var password = $(this).val();
+                var result = checkPasswordStrength(password);
+                $('#strength-bar').css('width', result.score + '%');
+                $('#strength-bar').css('background-color', getStrengthColor(result.score));
+                $('#password-strength').text("Strength: " + result.feedback).toggleClass('strong-password', result.score >= 75).toggleClass('weak-password', result.score < 75);
+                $('#feedback').html(result.errors.join('<br>'));
+            });
+        });
+
+        function checkPasswordStrength(password) {
+            let score = 0;
+            let errors = [];
+            let entropy = calculateEntropy(password);
+
+            if (password.length >= 8) {
+                score += 25;
+            } else {
+                errors.push("Password must be at least 8 characters long.");
+            }
+            if (password.match(/[A-Z]/)) {
+                score += 15;
+            } else {
+                errors.push("Password must include at least one uppercase letter.");
+            }
+            if (password.match(/[a-z]/)) {
+                score += 15;
+            } else {
+                errors.push("Password must include at least one lowercase letter.");
+            }
+            if (password.match(/[0-9]/)) {
+                score += 15;
+            } else {
+                errors.push("Password must include at least one digit.");
+            }
+            if (password.match(/[!@#$%^&*(),.<>?:{}|]/)) {
+                score += 15;
+            } else {
+                errors.push("Password must include at least one special character.");
+            }
+            if (entropy >= 28) {
+                score += 15;
+            } else {
+                errors.push("Low entropy; increase password complexity.");
+            }
+
+            const feedback = getFeedback(score);
+
+            return { score: score, feedback: feedback, errors: errors };
+        }
+
+        function calculateEntropy(password) {
+            let pool = new Set(password);
+            let entropyPerChar = Math.log2(pool.size);
+            let totalEntropy = entropyPerChar * password.length;
+            return totalEntropy;
+        }
+
+        function getFeedback(score) {
+            if (score >= 90) {
+                return "Very Strong";
+            } else if (score >= 75) {
+                return "Strong";
+            } else if (score >= 50) {
+                return "Medium";
+            } else if (score >= 25) {
+                return "Weak";
+            } else {
+                return "Very Weak";
+            }
+        }
+
+        function getStrengthColor(score) {
+            if (score >= 90) {
+                return "green";
+            } else if (score >= 75) {
+                return "lightgreen";
+            } else if (score >= 50) {
+                return "yellow";
+            } else if (score >= 25) {
+                return "orange";
+            } else {
+                return "red";
+            }
+        }
+    </script>
+</body>
+</html>
