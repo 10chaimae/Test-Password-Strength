@@ -16,9 +16,7 @@ def calculate_entropy(password):
 def index():
     if request.method == 'POST':
         password = request.form['password']
-        # Placeholder for potential future server-side checks
-        # strength, feedback = check_password_strength(password)
-        # return render_template('index.html', message=f"Password is {strength}", feedback=feedback)
+       
     return render_template('index.html')
 
 if __name__ == "__main__":
